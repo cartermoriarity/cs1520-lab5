@@ -1,10 +1,13 @@
+//const { object, element } = require("prop-types");
+
 // Run setup after page had loaded 
 window.addEventListener("load", setup);
 
 function setup() {
     addListeners();
-    // const data = retrieveItemsFromLocalStorage();  uncomment this for Version 2
-    // populateShoppingList(data);	 uncomment this for Version 2
+    //localStorage.clear();
+    const data = retrieveItemsFromLocalStorage();
+    populateShoppingList(data);
 }
 
 // add listeners to the buttons 
@@ -16,30 +19,38 @@ function addListeners() {
         selectAllItems);
 }
 
-// function retrieveItemsFromLocalStorage() {	 uncomment this function for Version 2
-//	create an empty data array. This array will be populated
-//	with item objects from the local storage
-//	An item object will have only one pair of (key,value)
-//	The "key" will be the item description, such as "banana",
-//	and the "value" will be the quantity, such as "2 dozen"
+function retrieveItemsFromLocalStorage() {
+    // create an empty data array. This array will be populated with item objects from the local storage
+    const data_array = [];
 
-//	loop over all the local storage items using a FOR loop
-//	retrive the key,value, create an object of them and
-//	add this object (push command) into the data array discribed
-//	above
+    // loop over all the local storage items using a FOR loop
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        var value = localStorage.getItem(key);
 
-//	// return the array with shopping item objects
-// }
+        // An item object will have only one pair of (key,value)
+        // The "key" will be the item description, such as "banana", and the "value" will be the quantity, such as "2 dozen"
+        // retrive the key,value, create an object of them
+        const item = new Object;
+        item.key = key;
+        item.value = value;
 
-// my gift to you. I am giving this function ready to use   uncomment this for Version 2
-// function populateShoppingList(data) {
-//	for (datum of data) {
-//	// there is only one pair of key, value per item object
-//	// this for loop is just to retrieve them
-//	for (var [key, value] of Object.entries(datum)) { }
-//	addItemToShoppingListArea(key, value);
-//	}
-// }
+        //add this object (push command) into the data array discribed above
+        data_array.push(item);
+
+    }
+
+    // return the array with shopping item objects
+    return data_array;
+}
+
+function populateShoppingList(data) {
+    for (datum of data) {
+        // there is only one pair of key, value per item object, this for loop is just to retrieve them
+        for (var [key, value] of Object.entries(datum)) {}
+        addItemToShoppingListArea(datum.key, datum.value);
+    }
+}
 
 function addItemToShoppingListArea(key, value) {
     // at this point there is only one key/value in datum object 
@@ -72,8 +83,7 @@ function addItemToShoppingListArea(key, value) {
     listDivElement.appendChild(divElement);
 }
 
-// create an input text field and an associate button to enter new item
-// into the shopping list 
+// create an input text field and an associate button to enter new item into the shopping list 
 function addNewItem() {
     // creating the div element
     const divElement = document.createElement("div");
@@ -119,7 +129,11 @@ function addNewItemToTheShoppingList() {
     itemListDiv.removeChild(document.getElementById("addNewButtonID"));
 
     // adding item in the local storage
-    //
+    console.log(itemTextDescriptionElement.value);
+    console.log(quantityInputTextElement.value);
+
+    localStorage.setItem(itemTextDescriptionElement.value, quantityInputTextElement.value);
+
 }
 
 function selectAllItems() {
@@ -142,6 +156,7 @@ function deleteSelectedItems() {
         if (checkBoxList[i].checked === true) {
 
             // add command to remove the item from the local storage here
+            localStorage.removeItem(checkBoxList[i].id)
 
             // removing the deleted item from the shopping list area 
             checkBoxList[i].parentElement.remove();
